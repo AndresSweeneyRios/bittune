@@ -7,12 +7,13 @@ import {
   beat,
 } from '../utils'
 import {
-  sine, 
+  // sine, 
+  square,
 } from '../waves'
 
 export const tetris: Track[] = [
   function *track1 (): Audio {
-    const instrument = sine
+    const instrument = square
 
     // 1
     yield instrument('E4', 1)
@@ -60,7 +61,7 @@ export const tetris: Track[] = [
   },
 
   function *track2 (): Audio {
-    const instrument = sine
+    const instrument = square
 
     function *loop (p1: Note, p2: Note, times: number): Audio {
       for (let i = 0; i < times; i++) {

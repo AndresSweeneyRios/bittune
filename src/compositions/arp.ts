@@ -8,12 +8,13 @@ import {
 } from "../utils"
 import {
   sine, 
+  square,
 } from "../waves"
 
 export const arp: Track[] = [
   function *track (): Audio {
     const instrument = (note: Note, beat: number) => {
-      return sine(note, beat, {}, {
+      return square(note, beat, {}, {
         // pre (_x, config) {
         //   config.envelope.volume = 0.1
         // },
@@ -26,6 +27,9 @@ export const arp: Track[] = [
     ]
 
     for (const note of [
+      ...dMajor,
+      ...dMajor,
+      ...dMajor,
       ...dMajor,
       ...['D3', 'E3', 'F#3', 'G3', 'A3', 'B3', 'C#4'] as Note[],
     ]) {

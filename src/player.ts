@@ -63,9 +63,9 @@ export const initPlayer = ({
 }
 
 import {
-  arp,
-} from './compositions/arp'
+  tetris,
+} from './compositions/tetris'
 
 initPlayer({
-  sampleRate: 8000,
-}).playComposition(arp)
+  
+}).playComposition(tetris)
