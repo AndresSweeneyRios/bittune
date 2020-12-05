@@ -1,0 +1,29 @@
+{
+  "name": "bittune",
+  "version": "0.1.0",
+  "description": "",
+  "main": "dist/src/player.js",
+  "scripts": {
+    "dev": "tsc -w",
+    "lint": "eslint --fix --ext .js,.vue,.ts ./"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Andr3wRiv3rs/bittune.git"
+  },
+  "author": "Andres Sweeney-Rios",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Andr3wRiv3rs/bittune/issues"
+  },
+  "homepage": "https://github.com/Andr3wRiv3rs/bittune#readme",
+  "devDependencies": {
+    "@types/node": "^14.14.10",
+    "@typescript-eslint/eslint-plugin": "^4.9.0",
+    "@typescript-eslint/parser": "^4.9.0",
+    "babel-eslint": "^10.1.0",
+    "eslint": "^7.15.0",
+    "source-map-support": "^0.5.19",
+    "typescript": "^4.1.2"
+  }
+}
