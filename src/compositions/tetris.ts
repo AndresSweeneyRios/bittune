@@ -4,15 +4,11 @@ import {
   Track,
 } from '@types'
 import {
-  beat,
-} from '../utils'
-import {
-  // sine, 
   square,
 } from '../waves'
 
 export const tetris: Track[] = [
-  function *track1 (): Audio {
+  function *track1 ({ beat }): Audio {
     const instrument = square
 
     // 1
@@ -60,7 +56,7 @@ export const tetris: Track[] = [
     yield beat(1.5)
   },
 
-  function *track2 (): Audio {
+  function *track2 ({ beat }): Audio {
     const instrument = square
 
     function *loop (p1: Note, p2: Note, times: number): Audio {
@@ -86,18 +82,18 @@ export const tetris: Track[] = [
       // 4
       ...loop('A1', 'A2', 4),
 
-      // // 5
-      // ...loop('D1', 'D2', 4),
+      // 5
+      ...loop('D1', 'D2', 4),
       
-      // // 6
-      // ...loop('C1', 'C2', 4),
+      // 6
+      ...loop('C1', 'C2', 4),
       
-      // // 7
-      // ...loop('G1', 'G2', 2),
-      // ...loop('E1', 'E2', 2),
+      // 7
+      ...loop('G1', 'G2', 2),
+      ...loop('E1', 'E2', 2),
 
-      // // 8
-      // ...loop('A1', 'A2', 4),
+      // 8
+      ...loop('A1', 'A2', 4),
     ]) yield sound
   },
 ]

@@ -47,7 +47,21 @@ export const initPlayer = ({
     async playTrack (track: Track): Promise<void> {
       console.log(`Playing ${track.name}..`)
 
-      for (const f of track()) {
+      let delta = 0
+
+      const beat = (beats: number) => (): Promise<void> => new Promise(resolve => {
+        const ms = 1000 * (beats / (this.tempo / 60)) + delta
+
+        const start = performance.now()
+
+        setTimeout(() => {
+          delta = ms - (performance.now() - start)
+          resolve()
+        }, ms)
+      })
+
+      for (const f of track({ beat })) {
+
         const sample = await f()
 
         if (sample) player.play(sample).catch(console.error)
@@ -67,5 +81,5 @@ import {
 } from './compositions/tetris'
 
 initPlayer({
-  
+  tempo: 125,
 }).playComposition(tetris)

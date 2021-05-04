@@ -4,15 +4,14 @@ import {
   Track, 
 } from "@types"
 import {
-  beat, notes, 
+  notes, 
 } from "../utils"
 import {
-  sine, 
   square,
 } from "../waves"
 
 export const arp: Track[] = [
-  function *track (): Audio {
+  function *track ({ beat }): Audio {
     const instrument = (note: Note, beat: number) => {
       return square(note, beat, {}, {
         // pre (_x, config) {
