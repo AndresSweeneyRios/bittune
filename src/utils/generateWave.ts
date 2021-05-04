@@ -17,7 +17,7 @@ export interface WaveConfig {
   sampleRate: number
   frequency: number
   sampleFrequency: number
-  envelope: WaveEnvelope
+  envelope: Partial<WaveEnvelope>
 }
 
 export type WaveHook = (
@@ -29,18 +29,13 @@ export type WaveHook = (
 export type WaveFunction = (
   note: Note,
   beats?: number,
-  options?: WaveEnvelopeConfig,
-  hooks?: {
-    pre?: WaveHook
-    post?: WaveHook
-  }
-) => () => Float32Array 
-
-export interface WaveEnvelopeConfig {
-  volume?: number
-  attack?: number
-  release?: number
-}
+  options?: Partial<WaveEnvelope>,
+  hooks?: Partial<{
+    init: (config: WaveConfig) => void
+    pre: WaveHook
+    post: WaveHook
+  }>
+) => () => Float32Array
 
 export interface WaveEnvelope {
   volume: number
@@ -68,14 +63,16 @@ export const generateWave = (callback: WaveHook): WaveFunction => {
       sample: new Float32Array(player.sampleRate * seconds),
       sampleRate: player.sampleRate,
       frequency,
-      sampleFrequency: player.sampleRate / frequency,
-      envelope: envelope as WaveEnvelope,
+      sampleFrequency: 0,
+      envelope,
     }
 
-    for (let x = 0; x < player.sampleRate * seconds; x++) {
-      if (hooks?.pre) {
-        hooks.pre(x, config, config.sample[x])
-      }
+    hooks?.init?.(config)
+
+    config.sampleFrequency = config.sampleRate / config.frequency
+
+    for (let x = 0; x < config.sampleRate * seconds; x++) {
+      hooks?.pre?.(x, config, config.sample[x])
 
       config.sample[x] = callback(x, config, 0) as number
       

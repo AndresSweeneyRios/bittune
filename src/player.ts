@@ -1,6 +1,9 @@
 import {
   Track, 
 } from "@types"
+import {
+  arp, 
+} from "./compositions/arp"
 
 export interface Player {
   volume: number
@@ -75,11 +78,3 @@ export const initPlayer = ({
 
   return player
 }
-
-import {
-  tetris,
-} from './compositions/tetris'
-
-initPlayer({
-  tempo: 125,
-}).playComposition(tetris)

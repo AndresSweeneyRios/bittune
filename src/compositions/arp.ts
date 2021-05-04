@@ -12,11 +12,15 @@ import {
 
 export const arp: Track[] = [
   function *track ({ beat }): Audio {
+    let usage = 0
+
     const instrument = (note: Note, beat: number) => {
+      usage++
+
       return square(note, beat, {}, {
-        // pre (_x, config) {
-        //   config.envelope.volume = 0.1
-        // },
+        init (config) {
+          config.frequency += usage * 4
+        },
       })
     }
 
