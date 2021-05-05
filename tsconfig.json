@@ -10,9 +10,9 @@
     "outDir": "./dist",
     "baseUrl": "./",
     "paths": {
-      "@types": ["./@types/index"]
+      "@types": ["./src/@types/index"]
     },
     "declaration": true,
   },
-  "include": ["./src/**/*.ts", "./@types/**/*.ts"]
+  "include": ["./src/**/*.ts"]
 }

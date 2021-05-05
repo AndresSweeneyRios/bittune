@@ -1,9 +1,9 @@
 import { 
   arp,
-} from "../../src/compositions/arp"
+} from "./compositions/arp"
 import {
   initPlayer,
-} from "../../src/player"
+} from "../../src"
 
 initPlayer({
   tempo: 100,

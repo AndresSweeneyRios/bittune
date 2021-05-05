@@ -3,7 +3,7 @@ import {
 } from '../player'
 import {
   Note, 
-} from "@types"
+} from "../@types"
 import {
   notes,
 } from '../utils'
@@ -20,11 +20,11 @@ export interface WaveConfig {
   envelope: Partial<WaveEnvelope>
 }
 
-export type WaveHook = (
+export type WaveHook <T = number> = (
   x: number,
   config: WaveConfig,
   currentSampleX: number
-) => number | void
+) => T
 
 export type WaveFunction = (
   note: Note,
@@ -32,8 +32,8 @@ export type WaveFunction = (
   options?: Partial<WaveEnvelope>,
   hooks?: Partial<{
     init: (config: WaveConfig) => void
-    pre: WaveHook
-    post: WaveHook
+    pre: WaveHook<void>
+    post: WaveHook<number | void>
   }>
 ) => () => Float32Array
 
@@ -43,7 +43,7 @@ export interface WaveEnvelope {
   release: number
 }
 
-export const generateWave = (callback: WaveHook): WaveFunction => {
+export const generateWave = (callback: WaveHook<number>): WaveFunction => {
   return (
     note,
     beats = 1,
@@ -74,7 +74,7 @@ export const generateWave = (callback: WaveHook): WaveFunction => {
     for (let x = 0; x < config.sampleRate * seconds; x++) {
       hooks?.pre?.(x, config, config.sample[x])
 
-      config.sample[x] = callback(x, config, 0) as number
+      config.sample[x] = callback(x, config, 0)
       
       if (hooks?.post) {
         const nx = hooks.post(x, config, config.sample[x])

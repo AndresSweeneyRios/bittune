@@ -1,9 +1,6 @@
 import {
   Track, 
-} from "@types"
-import {
-  arp, 
-} from "./compositions/arp"
+} from "./@types"
 
 export interface Player {
   volume: number
@@ -19,16 +16,16 @@ export let player: Player
 export let context: AudioContext
 
 export interface PlayerConfig {
-  volume?: number
-  sampleRate?: number
-  tempo?: number
+  volume: number
+  sampleRate: number
+  tempo: number
 }
 
 export const initPlayer = ({
   volume,
   sampleRate,
   tempo,
-}: PlayerConfig = {}): Player => {
+}: Partial<PlayerConfig> = {}): Player => {
   context = new AudioContext({
     sampleRate: sampleRate || 44100,
   })

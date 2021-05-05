@@ -2,13 +2,11 @@ import {
   Audio,
   Note, 
   Track, 
-} from "@types"
-import {
   notes, 
-} from "../utils"
-import {
   square,
-} from "../waves"
+  sine,
+  saw,
+} from "../../../src"
 
 export const arp: Track[] = [
   function *track ({ beat }): Audio {
@@ -17,9 +15,11 @@ export const arp: Track[] = [
     const instrument = (note: Note, beat: number) => {
       usage++
 
-      return square(note, beat, {}, {
+      return square(note, beat, {
+        volume: 3,
+      }, {
         init (config) {
-          config.frequency += usage * 4
+          // config.frequency = Math.random() * 800
         },
       })
     }
@@ -30,8 +30,6 @@ export const arp: Track[] = [
     ]
 
     for (const note of [
-      ...dMajor,
-      ...dMajor,
       ...dMajor,
       ...dMajor,
       ...['D3', 'E3', 'F#3', 'G3', 'A3', 'B3', 'C#4'] as Note[],

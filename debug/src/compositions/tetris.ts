@@ -2,10 +2,8 @@ import {
   Audio,
   Note,
   Track,
-} from '@types'
-import {
   square,
-} from '../waves'
+} from '../../../src'
 
 export const tetris: Track[] = [
   function *track1 ({ beat }): Audio {

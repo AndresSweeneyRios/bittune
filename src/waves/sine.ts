@@ -2,6 +2,8 @@ import {
   generateWave,
 } from '../utils'
 
+const P2 = Math.PI * 2
+
 export const sine = generateWave(
-  (x, { sampleFrequency }) => Math.sin(x / (sampleFrequency / (Math.PI * 2))),
+  (T, { sampleFrequency: F }) => Math.sin(T / (F / P2)),
 )

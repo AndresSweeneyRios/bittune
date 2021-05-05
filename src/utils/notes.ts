@@ -1,4 +1,8 @@
-export const notes = {
+import {
+  Note,
+} from "src/@types"
+
+export const notes: Record<Note, number> = {
   "C0": 16.35,
   "C#0": 17.32,
   "Db0": 17.32,
