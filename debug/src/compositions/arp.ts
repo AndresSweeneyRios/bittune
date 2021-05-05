@@ -15,7 +15,7 @@ export const arp: Track[] = [
     const instrument = (note: Note, beat: number) => {
       usage++
 
-      return square(note, beat, {
+      return saw(note, beat, {
         volume: 3,
       }, {
         init (config) {
