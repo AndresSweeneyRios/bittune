@@ -3,7 +3,7 @@ import {
 } from '../utils'
 
 export const saw = generateWave(
-  (T, { sampleFrequency: F }) => {
+  (T, F) => {
     T %= F
 
     if (T < 0) T += 1

@@ -1,18 +1,16 @@
-export const fade = (sample: Float32Array, sampleRate: number, attack: number, release: number): Float32Array => {
+export const fade = (buffer: number[], sampleRate: number, attack: number, release: number): number[] => {
   const attackX = sampleRate * attack 
-  const releaseX = sample.length - sampleRate * release 
+  const releaseX = buffer.length - sampleRate * release 
 
-  for (const i in sample) {
-    const x = Number(i)
-
-    if (x < attackX) {
-      sample[x] *= x / attackX
+  buffer.forEach((_, T) => {
+    if (T < attackX) {
+      buffer[T] *= T / attackX
     }
 
-    if (x > releaseX) {
-      sample[x] *= (sample.length - x) / (sample.length - releaseX)
+    if (T > releaseX) {
+      buffer[T] *= (buffer.length - T) / (buffer.length - releaseX)
     }
-  }
+  })
 
-  return sample
+  return buffer
 }

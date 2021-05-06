@@ -1,5 +1,5 @@
 import {
-  player,
+  Player,
 } from '../player'
 import {
   Note, 
@@ -13,29 +13,11 @@ import {
 
 export interface WaveConfig {
   seconds: number
-  sample: Float32Array
+  sample: number[]
   sampleRate: number
   frequency: number
-  sampleFrequency: number
   envelope: Partial<WaveEnvelope>
 }
-
-export type WaveHook <T = number> = (
-  x: number,
-  config: WaveConfig,
-  currentSampleX: number
-) => T
-
-export type WaveFunction = (
-  note: Note,
-  beats?: number,
-  options?: Partial<WaveEnvelope>,
-  hooks?: Partial<{
-    init: (config: WaveConfig) => void
-    pre: WaveHook<void>
-    post: WaveHook<number | void>
-  }>
-) => () => Float32Array
 
 export interface WaveEnvelope {
   volume: number
@@ -43,16 +25,24 @@ export interface WaveEnvelope {
   release: number
 }
 
-export const generateWave = (callback: WaveHook<number>): WaveFunction => {
+export const generateWave = (
+  callback: (t: number, sampleFrequency: number, config: WaveConfig, currentSampleT: number) => number,
+) => {
   return (
-    note,
+    note: Note,
     beats = 1,
-    envelope = {},
-    hooks?,
-  ) => () => {
-    envelope.volume = envelope.volume || 1
-    envelope.attack = envelope.attack || 0.0075
-    envelope.release = envelope.release || 0.0075
+    envelope: Partial<WaveEnvelope> = {},
+    hooks: Partial<{
+      init: (config: WaveConfig) => void
+      pre: (t: number, config: WaveConfig, currentSampleT: number) => void
+      post: (t: number, sampleFrequency: number, config: WaveConfig, currentSampleT: number) => number
+    }> = {},
+  ) => (player: Player) => {
+    Object.assign(envelope, {
+      volume: 1,
+      attack: 0.0075,
+      release: 0.0075,
+    }, envelope)
 
     const seconds = beats / (player.tempo / 60)
 
@@ -60,37 +50,35 @@ export const generateWave = (callback: WaveHook<number>): WaveFunction => {
 
     const config: WaveConfig = {
       seconds,
-      sample: new Float32Array(player.sampleRate * seconds),
+      sample: new Array<number>(player.sampleRate * seconds),
       sampleRate: player.sampleRate,
       frequency,
-      sampleFrequency: 0,
       envelope,
     }
 
-    hooks?.init?.(config)
-
-    config.sampleFrequency = config.sampleRate / config.frequency
+    hooks.init?.(config)
 
     for (let x = 0; x < config.sampleRate * seconds; x++) {
-      hooks?.pre?.(x, config, config.sample[x])
+      hooks.pre?.(x, config, config.sample[x])
 
-      config.sample[x] = callback(x, config, 0)
+      config.sample[x] = callback(x, config.sampleRate / config.frequency, config, 0)
       
-      if (hooks?.post) {
-        const nx = hooks.post(x, config, config.sample[x])
+      if (hooks.post) {
+        const nx = hooks.post(x, config.sampleRate / config.frequency, config, config.sample[x])
 
         if (nx !== undefined) config.sample[x] = nx
       }
 
-      config.sample[x] = config.sample[x] * envelope.volume * player.volume
+      config.sample[x] = config.sample[x] * envelope.volume! * player.volume
     }
 
-    return fade(config.sample, player.sampleRate, envelope.attack, envelope.release)
+    return fade(config.sample, player.sampleRate, envelope.attack!, envelope.release!)
   }
 }
 
 export const generateSilence = (
   beats = 1,
+  player: Player,
 ): 0[] => {
   const seconds = beats / (player.tempo / 60)
   const sample: 0[] = []

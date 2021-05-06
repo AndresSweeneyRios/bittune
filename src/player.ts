@@ -1,19 +1,9 @@
 import {
   Track, 
 } from "./@types"
-
-export interface Player {
-  volume: number
-  sampleRate: number
-  tempo: number
-
-  play (buf: Float32Array): Promise<void>
-  playTrack (track: Track): Promise<void>
-  playComposition (composition: Track[]): Promise<void>
-}
-
-export let player: Player
-export let context: AudioContext
+import {
+  silence, 
+} from "./waves"
 
 export interface PlayerConfig {
   volume: number
@@ -21,57 +11,69 @@ export interface PlayerConfig {
   tempo: number
 }
 
-export const initPlayer = ({
-  volume,
-  sampleRate,
-  tempo,
-}: Partial<PlayerConfig> = {}): Player => {
-  context = new AudioContext({
-    sampleRate: sampleRate || 44100,
-  })
+export class Player {
+  context: AudioContext
 
-  player = {
-    volume: volume || 0.1,
-    sampleRate: context.sampleRate,
-    tempo: tempo || 125,
+  sampleRate = 44100
+  volume = 0.1
+  tempo = 125
 
-    async play (buf: Float32Array): Promise<void> {
-      const buffer = context.createBuffer(1, buf.length, context.sampleRate)
-      buffer.copyToChannel(buf, 0)
-      const source = context.createBufferSource()
-      source.buffer = buffer
-      source.connect(context.destination)
-      source.start(0)
-    },
+  constructor (config: Partial<PlayerConfig> = {}) {
+    Object.assign(this, config)
 
-    async playTrack (track: Track): Promise<void> {
-      console.log(`Playing ${track.name}..`)
-
-      let delta = 0
-
-      const beat = (beats: number) => (): Promise<void> => new Promise(resolve => {
-        const ms = 1000 * (beats / (this.tempo / 60)) + delta
-
-        const start = performance.now()
-
-        setTimeout(() => {
-          delta = ms - (performance.now() - start)
-          resolve()
-        }, ms)
-      })
-
-      for (const f of track({ beat })) {
-
-        const sample = await f()
-
-        if (sample) player.play(sample).catch(console.error)
-      }
-    },
-
-    async playComposition (composition: Track[]): Promise<void> {
-      await Promise.all(Object.values(composition).map(track => player.playTrack(track)))
-    },
+    this.context = new AudioContext({
+      sampleRate: this.sampleRate,
+    })
   }
 
-  return player
+  play (source: number[]): void {
+    const float32Array = new Float32Array(source)
+
+    const buffer = this.context.createBuffer(1, float32Array.length, this.context.sampleRate)
+    buffer.copyToChannel(float32Array, 0)
+
+    const audioNode = this.context.createBufferSource()
+    audioNode.buffer = buffer
+    audioNode.connect(this.context.destination)
+    audioNode.start(0)
+  }
+
+  mixTrack (track: Track): number[] {
+    const mixedTrack: number[] = []
+    const buffer: number[] = []
+
+    for (const f of track()) {
+      if (typeof f === "function") {
+        f(this).forEach((sample, index) => {
+          if (buffer[index]) buffer[index] += sample
+          else buffer[index] = sample
+        })
+      } else {
+        buffer.push(...silence(f, this))
+        mixedTrack.push(...buffer)
+        buffer.splice(0)
+      }
+    }
+
+    return mixedTrack
+  }
+
+  mixComposition (composition: Track[]): number[] {
+    const mixedComposition: number[] = []
+
+    composition.forEach(track => {
+      const mixedTrack = this.mixTrack(track)
+
+      mixedTrack.forEach((sample, index) => {
+        if (mixedComposition[index]) mixedComposition[index] += sample
+        else mixedComposition[index] = sample
+      })
+    })
+
+    return mixedComposition
+  }
+  
+  playComposition (composition: Track[]): void {
+    this.play(this.mixComposition(composition))
+  }
 }

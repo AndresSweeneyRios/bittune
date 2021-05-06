@@ -6,22 +6,29 @@ import {
   square,
   sine,
   saw,
+  Player,
 } from "../../../src"
+import {
+  stretch, 
+} from "../../../src/effects"
 
 export const arp: Track[] = [
-  function *track ({ beat }): Audio {
-    let usage = 0
-
+  function *track (): Audio {
     const instrument = (note: Note, beat: number) => {
-      usage++
+      return (player: Player) => {
+        const buffer = square(note, beat, {
+          volume: 3,
+          release: 1/16,
+        }, {
+          pre (T, config) {
+            config.frequency += T / config.sampleRate
+          },
+        })(player)
+        
+        // return stretch(buffer, 2)
 
-      return saw(note, beat, {
-        volume: 3,
-      }, {
-        init (config) {
-          // config.frequency = Math.random() * 800
-        },
-      })
+        return buffer
+      }
     }
 
     const dMajor: Note[] = [
@@ -35,11 +42,10 @@ export const arp: Track[] = [
       ...['D3', 'E3', 'F#3', 'G3', 'A3', 'B3', 'C#4'] as Note[],
     ]) {
       yield instrument(note, 1/8)
-      yield beat(1/8)
+
+      yield 1/16
     }
 
-    yield instrument(notes['D4'], 1)
-
-    yield beat(1)
+    yield instrument(notes['D4'], 1/8)
   },
 ]

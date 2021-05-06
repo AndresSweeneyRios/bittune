@@ -5,5 +5,5 @@ import {
 const P2 = Math.PI * 2
 
 export const square = generateWave(
-  (T, { sampleFrequency: F }) => Math.ceil(Math.sin(T / (F / P2))),
+  (T, F) => Math.ceil(Math.sin(T / (F / P2))),
 )

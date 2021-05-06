@@ -2,23 +2,33 @@ import {
   arp,
 } from "./compositions/arp"
 import {
-  initPlayer, 
-  saw, 
+  Player, 
+  saw,
 } from "../../src"
+import {
+  tetris, 
+} from "./compositions/tetris"
+import {
+  stretch, 
+} from "../../src/effects"
 
-initPlayer({
-  tempo: 100,
-  sampleRate: 20000,
+const player = new Player({
+  tempo: 125,
 })
-  .playComposition(arp)
+
+const buffer = player.mixComposition(tetris)
+player.play(stretch(buffer, 0.25))
 
 const canvas = document.createElement('canvas')
 const context = canvas.getContext('2d')!
 
-const wave = saw(400, 1/8)()
+const wave = saw(400, 1/8, {
+  release: 0,
+  attack: 0,
+})(player)
 
 canvas.width = wave.length
-canvas.height = 400
+canvas.height = 250
 canvas.style.width = "100%"
 canvas.style.height = "400px"
 canvas.style.imageRendering = "pixelated"

@@ -6,63 +6,63 @@ import {
 } from '../../../src'
 
 export const tetris: Track[] = [
-  function *track1 ({ beat }): Audio {
+  function *track1 (): Audio {
     const instrument = square
 
     // 1
     yield instrument('E4', 1)
-    yield beat(1)
+    yield 1
     yield instrument('B3', 1/2)
-    yield beat(1/2)
+    yield 1/2
     yield instrument('C4', 1/2)
-    yield beat(1/2)
+    yield 1/2
     yield instrument('D4', 1)
-    yield beat(1)
+    yield 1
     yield instrument('C4', 1/2)
-    yield beat(1/2)
+    yield 1/2
     yield instrument('B3', 1/2)
-    yield beat(1/2)
+    yield 1/2
 
     // 2
     yield instrument('A3', 1.5)
-    yield beat(1.5)
+    yield 1.5
     yield instrument('C4', 1/2)
-    yield beat(1/2)
+    yield 1/2
     yield instrument('E4', 1)
-    yield beat(1)
+    yield 1
     yield instrument('D4', 1/2)
-    yield beat(1/2)
+    yield 1/2
     yield instrument('C4', 1/2)
-    yield beat(1/2)
+    yield 1/2
 
     //  3
     yield instrument('B3', 1.5)
-    yield beat(1.5)
+    yield 1.5
     yield instrument('C4', 1/2)
-    yield beat(1/2)
+    yield 1/2
     yield instrument('D4', 1)
-    yield beat(1)
+    yield 1
     yield instrument('E4', 1)
-    yield beat(1)
+    yield 1
 
     // 4
     yield instrument('C4', 1)
-    yield beat(1)
+    yield 1
     yield instrument('A3', 1)
-    yield beat(1)
+    yield 1
     yield instrument('A3', 1.5)
-    yield beat(1.5)
+    yield 1.5
   },
 
-  function *track2 ({ beat }): Audio {
+  function *track2 (): Audio {
     const instrument = square
 
     function *loop (p1: Note, p2: Note, times: number): Audio {
       for (let i = 0; i < times; i++) {
         yield instrument(p1, 1/2)
-        yield beat(1/2)
+        yield 1/2
         yield instrument(p2, 1/2)
-        yield beat(1/2)
+        yield 1/2
       }
     }
 
