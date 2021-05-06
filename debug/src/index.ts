@@ -2,22 +2,20 @@ import {
   arp,
 } from "./compositions/arp"
 import {
-  Player, 
-  saw,
-} from "../../src"
-import {
   tetris, 
 } from "./compositions/tetris"
 import {
-  stretch, 
-} from "../../src/effects"
+  Player, 
+  saw,
+  effects,
+} from "../../src"
 
 const player = new Player({
-  tempo: 125,
+  tempo: 275,
 })
 
 const buffer = player.mixComposition(tetris)
-player.play(stretch(buffer, 0.25))
+player.play(effects.reverb(buffer))
 
 const canvas = document.createElement('canvas')
 const context = canvas.getContext('2d')!

@@ -24,8 +24,8 @@ export const tetris: Track[] = [
     yield 1/2
 
     // 2
-    yield instrument('A3', 1.5)
-    yield 1.5
+    yield instrument('A3', 3/2)
+    yield 3/2
     yield instrument('C4', 1/2)
     yield 1/2
     yield instrument('E4', 1)
@@ -36,8 +36,8 @@ export const tetris: Track[] = [
     yield 1/2
 
     //  3
-    yield instrument('B3', 1.5)
-    yield 1.5
+    yield instrument('B3', 3/2)
+    yield 3/2
     yield instrument('C4', 1/2)
     yield 1/2
     yield instrument('D4', 1)
@@ -50,8 +50,50 @@ export const tetris: Track[] = [
     yield 1
     yield instrument('A3', 1)
     yield 1
-    yield instrument('A3', 1.5)
-    yield 1.5
+    yield instrument('A3', 3/2)
+    yield 5/2
+
+    // 5
+    yield instrument('D4', 3/2)
+    yield 3/2
+    yield instrument('F4', 1/2)
+    yield 1/2
+    yield instrument('A4', 1)
+    yield 1
+    yield instrument('G4', 1/2)
+    yield 1/2
+    yield instrument('F4', 1/2)
+    yield 1/2
+
+    // 6
+    yield instrument('E4', 3/2)
+    yield 3/2
+    yield instrument('C4', 1/2)
+    yield 1/2
+    yield instrument('E4', 1)
+    yield 1
+    yield instrument('D4', 1/2)
+    yield 1/2
+    yield instrument('C4', 1/2)
+    yield 1/2
+
+    //  7
+    yield instrument('B3', 3/2)
+    yield 3/2
+    yield instrument('C4', 1/2)
+    yield 1/2
+    yield instrument('D4', 1)
+    yield 1
+    yield instrument('E4', 1)
+    yield 1
+
+    // 8
+    yield instrument('C4', 1)
+    yield 1
+    yield instrument('A3', 1)
+    yield 1
+    yield instrument('A3', 3/2)
+    yield 3/2
   },
 
   function *track2 (): Audio {
@@ -91,7 +133,10 @@ export const tetris: Track[] = [
       ...loop('E1', 'E2', 2),
 
       // 8
-      ...loop('A1', 'A2', 4),
+      ...loop('A1', 'A2', 2),
     ]) yield sound
+
+    yield instrument('A1', 1)
+    yield 1
   },
 ]

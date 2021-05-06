@@ -50,7 +50,7 @@ export const generateWave = (
 
     const config: WaveConfig = {
       seconds,
-      sample: new Array<number>(player.sampleRate * seconds),
+      sample: new Array<number>(Math.floor(player.sampleRate * seconds)),
       sampleRate: player.sampleRate,
       frequency,
       envelope,
@@ -83,7 +83,7 @@ export const generateSilence = (
   const seconds = beats / (player.tempo / 60)
   const sample: 0[] = []
   
-  for (let i = 0; i < player.sampleRate * seconds; i++) {
+  for (let i = 0; i < Math.floor(player.sampleRate * seconds); i++) {
     sample[i] = 0
   }
 

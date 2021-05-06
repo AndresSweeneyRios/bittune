@@ -7,9 +7,9 @@ import {
   sine,
   saw,
   Player,
+  effects, 
 } from "../../../src"
 import {
-  stretch, 
 } from "../../../src/effects"
 
 export const arp: Track[] = [
@@ -25,7 +25,7 @@ export const arp: Track[] = [
           },
         })(player)
         
-        // return stretch(buffer, 2)
+        //return effects.stretch(buffer, 2)
 
         return buffer
       }
@@ -38,14 +38,14 @@ export const arp: Track[] = [
 
     for (const note of [
       ...dMajor,
-      ...dMajor,
-      ...['D3', 'E3', 'F#3', 'G3', 'A3', 'B3', 'C#4'] as Note[],
+      // ...dMajor,
+      // ...['D3', 'E3', 'F#3', 'G3', 'A3', 'B3', 'C#4'] as Note[],
     ]) {
       yield instrument(note, 1/8)
 
       yield 1/16
     }
 
-    yield instrument(notes['D4'], 1/8)
+    // yield instrument(notes['D4'], 1/8)
   },
 ]
