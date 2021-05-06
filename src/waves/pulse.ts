@@ -2,9 +2,9 @@ import {
   generateWave,
 } from '../utils'
 
-export const square = generateWave(
+export const pulse = (pulseWidth = 1/2) => generateWave(
   (T, F, config) => {
-    const width = 0.5 * F
+    const width = pulseWidth * F
 
     T %= F
 

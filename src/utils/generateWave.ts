@@ -38,11 +38,9 @@ export const generateWave = (
       post: (t: number, sampleFrequency: number, config: WaveConfig, currentSampleT: number) => number
     }> = {},
   ) => (player: Player) => {
-    Object.assign(envelope, {
-      volume: 1,
-      attack: 0.0075,
-      release: 0.0075,
-    }, envelope)
+    if (envelope.volume === undefined) envelope.volume = 1
+    if (envelope.attack === undefined) envelope.attack = 0.0075
+    if (envelope.release === undefined) envelope.release = 0.0075
 
     const seconds = beats / (player.tempo / 60)
 
@@ -69,10 +67,10 @@ export const generateWave = (
         if (nx !== undefined) config.sample[x] = nx
       }
 
-      config.sample[x] = config.sample[x] * envelope.volume! * player.volume
+      config.sample[x] = config.sample[x] * envelope.volume * player.volume
     }
 
-    return fade(config.sample, player.sampleRate, envelope.attack!, envelope.release!)
+    return fade(config.sample, player.sampleRate, envelope.attack, envelope.release)
   }
 }
 

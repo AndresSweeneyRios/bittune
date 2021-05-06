@@ -3,11 +3,14 @@ import {
   Note,
   Track,
   square,
+  triangle,
+  pulse,
+  saw,
 } from '../../../src'
 
 export const tetris: Track[] = [
   function *track1 (): Audio {
-    const instrument = square
+    const instrument = pulse(5/6)
 
     // 1
     yield instrument('E4', 1)
@@ -97,7 +100,7 @@ export const tetris: Track[] = [
   },
 
   function *track2 (): Audio {
-    const instrument = square
+    const instrument = triangle
 
     function *loop (p1: Note, p2: Note, times: number): Audio {
       for (let i = 0; i < times; i++) {
