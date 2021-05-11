@@ -1,6 +1,6 @@
 import {
   Note,
-} from "src/@types"
+} from "../@types"
 
 export const notes: Record<Note, number> = {
   "C0": 16.35,

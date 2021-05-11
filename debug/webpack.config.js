@@ -33,6 +33,10 @@ module.exports = () => ({
           },
         ],
       },
+      {
+        test: /\.(frag|vert)$/,
+        use: 'raw-loader',
+      },
     ],
   },
 
