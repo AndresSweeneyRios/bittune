@@ -3,14 +3,54 @@ import fragmentShader from "./frag.frag"
 
 import {
   Player,
-  sine, 
+  sine,
+  saw,
+  pulse,
+  triangle,
+  effects
 } from "../../src"
 
 const player = new Player()
 
-const wave = sine("A#4", 1/8)(player)
+const wave = sine("A#4", 1 / 32, {
+  release: 0,
+  attack: 0
+})(player)
+
+player.play(wave)
 
 console.log(wave)
+
+const toFloat32 = (value: number) => {
+  var bytes = 0;
+  switch (value) {
+    case Number.POSITIVE_INFINITY: bytes = 0x7F800000; break;
+    case Number.NEGATIVE_INFINITY: bytes = 0xFF800000; break;
+    case +0.0: bytes = 0x40000000; break;
+    case -0.0: bytes = 0xC0000000; break;
+    default:
+      if (Number.isNaN(value)) { bytes = 0x7FC00000; break; }
+
+      if (value <= -0.0) {
+        bytes = 0x80000000;
+        value = -value;
+      }
+
+      var exponent = Math.floor(Math.log(value) / Math.log(2));
+      var significand = ((value / Math.pow(2, exponent)) * 0x00800000) | 0;
+
+      exponent += 127;
+      if (exponent >= 0xFF) {
+        exponent = 0xFF;
+        significand = 0;
+      } else if (exponent < 0) exponent = 0;
+
+      bytes = bytes | (exponent << 23);
+      bytes = bytes | (significand & ~(-1 << 23));
+      break;
+  }
+  return bytes;
+};
 
 const canvas = document.createElement('canvas')
 document.body.appendChild(canvas)
@@ -25,14 +65,14 @@ const createShader = (gl: WebGLRenderingContext, type: number, source: string) =
   const success = gl.getShaderParameter(shader, gl.COMPILE_STATUS)
 
   if (success) return shader
- 
+
   console.error(gl.getShaderInfoLog(shader))
   gl.deleteShader(shader)
 }
 
 const createProgram = (gl: WebGLRenderingContext, vertexShader: WebGLShader, fragmentShader: WebGLShader) => {
   const program = gl.createProgram()!
-  
+
   gl.attachShader(program, vertexShader)
   gl.attachShader(program, fragmentShader)
   gl.linkProgram(program)
@@ -40,14 +80,14 @@ const createProgram = (gl: WebGLRenderingContext, vertexShader: WebGLShader, fra
   const success = gl.getProgramParameter(program, gl.LINK_STATUS)
 
   if (success) return program
- 
+
   console.log(gl.getProgramInfoLog(program))
   gl.deleteProgram(program)
 }
 
 const program = createProgram(
-  gl, 
-  createShader(gl, gl.VERTEX_SHADER, vertexShader)!, 
+  gl,
+  createShader(gl, gl.VERTEX_SHADER, vertexShader)!,
   createShader(gl, gl.FRAGMENT_SHADER, fragmentShader)!,
 )
 
@@ -58,7 +98,7 @@ if (program) {
 
   const positionBuffer = gl.createBuffer()
   gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer)
-  
+
   const positions = [
     0, 0,
     canvas.width, 0,
@@ -67,11 +107,11 @@ if (program) {
     canvas.width, 0,
     canvas.width, canvas.height,
   ]
-  
+
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW)
 
   gl.viewport(0, 0, gl.canvas.width, gl.canvas.height)
-  
+
   gl.clearColor(0, 0, 0, 0)
   gl.clear(gl.COLOR_BUFFER_BIT)
 
@@ -96,6 +136,8 @@ if (program) {
 
     return [R, 0, 0, 0]
   }).flat()
+
+  console.log(data)
 
   {
     const texture = gl.createTexture()
@@ -128,7 +170,7 @@ if (program) {
   // set the filtering so we don't need mips and it's not filtered
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST)
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
- 
+
   // Tell the attribute how to get data out of positionBuffer (ARRAY_BUFFER)
   const size = 2          // 2 components per iteration
   const type = gl.FLOAT   // the data is 32bit floats
@@ -142,7 +184,7 @@ if (program) {
     const primitiveType = gl.TRIANGLES
     const offset = 0
     const count = 6
-  
+
     gl.drawArrays(primitiveType, offset, count)
   }
 }

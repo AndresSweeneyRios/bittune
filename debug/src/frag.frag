@@ -12,5 +12,5 @@ void main() {
 
   float normalizedRedChannel = sample.r / 255.0;
 
-  gl_FragColor = vec4(float(st.y < normalizedRedChannel * 150.0), 0, 0, 1.0);
+  gl_FragColor = vec4(float(st.y < normalizedRedChannel * u_resolution.y), 0, 0, 1.0);
 }
