@@ -52,36 +52,6 @@ const program = createProgram(
 )
 
 if (program) {
-  const texture = gl.createTexture()
-  gl.bindTexture(gl.TEXTURE_2D, texture)
-
-  const level = 0
-  const internalFormat = gl.RGBA
-  const width = 1
-  const height = 1
-  const border = 0
-  const srcFormat = gl.RGBA
-  const srcType = gl.UNSIGNED_BYTE
-
-  const colors = [
-    [255, 255, 0, 255],
-    // [0, 0, 255, 255],
-  ]
-
-  colors.forEach(function(color, ndx) {
-    gl.activeTexture(gl.TEXTURE0 + ndx)
-    const tex = gl.createTexture()
-    gl.bindTexture(gl.TEXTURE_2D, tex)
-
-    gl.texImage2D(gl.TEXTURE_2D, level, internalFormat, 
-      2, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, 
-      new Uint8Array(color),
-    )
-  })
-  
-  const textureLoc = gl.getUniformLocation(program, "u_sampler")
-  gl.uniform1iv(textureLoc, [0, 1])
-
   const positionAttributeLocation = gl.getAttribLocation(program, "a_position")
   const resolutionUniformLocation = gl.getUniformLocation(program, "u_resolution")
 
@@ -110,6 +80,36 @@ if (program) {
   gl.uniform2f(resolutionUniformLocation, gl.canvas.width, gl.canvas.height)
 
   gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer)
+  
+  const texture = gl.createTexture()
+  gl.bindTexture(gl.TEXTURE_2D, texture)
+
+  const level = 0
+  const internalFormat = gl.RGBA
+  const width = 2
+  const height = 1
+  const border = 0
+  const srcFormat = gl.RGBA
+  const srcType = gl.UNSIGNED_BYTE
+
+  const data = [
+    255, 255, 0, 255,
+    0, 0, 255, 255,
+  ]
+
+  const alignment = 1 // should be uneccessary for this texture, but 
+  gl.pixelStorei(gl.UNPACK_ALIGNMENT, alignment) //   I don't think this is hurting
+  gl.texImage2D(gl.TEXTURE_2D, level, internalFormat, width, height, border,
+    srcFormat, srcType, new Uint8Array(data))
+
+  // set the filtering so we don't need mips and it's not filtered
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST)
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+  
+  const textureLoc = gl.getUniformLocation(program, "u_sampler")
+  gl.uniform1iv(textureLoc, [0, 1])
  
   // Tell the attribute how to get data out of positionBuffer (ARRAY_BUFFER)
   const size = 2          // 2 components per iteration
