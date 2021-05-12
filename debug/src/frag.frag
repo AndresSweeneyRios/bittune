@@ -1,21 +1,18 @@
 precision mediump float;
 uniform mediump vec2 u_resolution;
-uniform mediump sampler2D u_sampler;
+uniform sampler2D u_sampler;
+uniform float u_wavelength;
 
-vec2 textureSize = vec2(2.0, 1.0);
+varying highp vec2 v_texcoord;
 
 void main() {
-  vec2 st = gl_FragCoord.xy / u_resolution;
+  vec4 sample = texture2D(u_sampler, vec2(0.0, 0.0));
 
-  float index = 0.0;
+  float normalizedRedChannel = sample.r / 255.0;
 
-  float column = mod(index, textureSize.x);
-  float row    = floor(index / textureSize.x);
-  vec2 uv = vec2(
-    (column + 0.5) / textureSize.x,
-    (row    + 0.5) / textureSize.y);
+  // vec4 color = vec4(1.0 - 1.0 * float(st.y > normalizedRedChannel / 0.005), 0.0, 0.0, 1.0);
+  
+  vec4 color = vec4(sample.r, sample.g, sample.b, 1.0);
 
-  vec4 color = texture2D(u_sampler, uv);
-
-  gl_FragColor = vec4(vec3(0.5), 1.0);
+  gl_FragColor = color;
 }

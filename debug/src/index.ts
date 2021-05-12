@@ -54,6 +54,7 @@ const program = createProgram(
 if (program) {
   const positionAttributeLocation = gl.getAttribLocation(program, "a_position")
   const resolutionUniformLocation = gl.getUniformLocation(program, "u_resolution")
+  const wavelengthUniformLocation = gl.getUniformLocation(program, "u_wavelength")
 
   const positionBuffer = gl.createBuffer()
   gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer)
@@ -78,38 +79,72 @@ if (program) {
   gl.enableVertexAttribArray(positionAttributeLocation)
 
   gl.uniform2f(resolutionUniformLocation, gl.canvas.width, gl.canvas.height)
+  gl.uniform1f(wavelengthUniformLocation, wave.length)
 
   gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer)
-  
-  const texture = gl.createTexture()
-  gl.bindTexture(gl.TEXTURE_2D, texture)
 
-  const level = 0
-  const internalFormat = gl.RGBA
-  const width = 2
-  const height = 1
-  const border = 0
-  const srcFormat = gl.RGBA
-  const srcType = gl.UNSIGNED_BYTE
+  const newWave: number[] = []
 
-  const data = [
-    255, 255, 0, 255,
-    0, 0, 255, 255,
-  ]
+  const scale = wave.length / canvas.width
 
-  const alignment = 1 // should be uneccessary for this texture, but 
-  gl.pixelStorei(gl.UNPACK_ALIGNMENT, alignment) //   I don't think this is hurting
-  gl.texImage2D(gl.TEXTURE_2D, level, internalFormat, width, height, border,
-    srcFormat, srcType, new Uint8Array(data))
+  for (let i = 0; i < canvas.width; i++) {
+    newWave.push(wave[Math.floor(i * scale)])
+  }
+
+  const data = newWave.map((sample) => {
+    const R = Math.floor((sample + 0.1) / 2 * 2550)
+
+    return [Math.floor(Math.random() * 255), Math.floor(Math.random() * 255), Math.floor(Math.random() * 255), 255]
+  }).flat()
+
+  const image = document.createElement('canvas')
+  const ctx = image.getContext('2d')!
+  document.body.appendChild(image)
+
+  image.width = data.length
+  image.height = 1
+
+  for (let i = 0; i < data.length / 4; i++) {
+    const [r, g, b, a] = data.slice(i, i + 4)
+
+    ctx.fillStyle = `rgba(${r}, ${g}, ${b}, 1)`
+    ctx.fillRect(i, 0, 1, 1)
+  }
+
+  {
+    const texture = gl.createTexture()
+    gl.bindTexture(gl.TEXTURE_2D, texture)
+
+    // Because images have to be download over the internet
+    // they might take a moment until they are ready.
+    // Until then put a single pixel in the texture so we can
+    // use it immediately. When the image has finished downloading
+    // we'll update the texture with the contents of the image.
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE,
+      new Uint8Array([0, 0, 255, 255]))
+
+    gl.bindTexture(gl.TEXTURE_2D, texture)
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA,gl.UNSIGNED_BYTE, image)
+
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
+  }
+  // gl.texImage2D(
+  //   gl.TEXTURE_2D, 
+  //   level, 
+  //   internalFormat, 
+  //   width, 
+  //   height, 
+  //   border,
+  //   srcFormat, 
+  //   srcType, 
+  //   new Uint8Array(data),
+  // )
 
   // set the filtering so we don't need mips and it's not filtered
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST)
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
-  
-  const textureLoc = gl.getUniformLocation(program, "u_sampler")
-  gl.uniform1iv(textureLoc, [0, 1])
  
   // Tell the attribute how to get data out of positionBuffer (ARRAY_BUFFER)
   const size = 2          // 2 components per iteration
