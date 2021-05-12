@@ -94,22 +94,8 @@ if (program) {
   const data = newWave.map((sample) => {
     const R = Math.floor((sample + 0.1) / 2 * 2550)
 
-    return [Math.floor(Math.random() * 255), Math.floor(Math.random() * 255), Math.floor(Math.random() * 255), 255]
+    return [R, 0, 0, 0]
   }).flat()
-
-  const image = document.createElement('canvas')
-  const ctx = image.getContext('2d')!
-  document.body.appendChild(image)
-
-  image.width = data.length
-  image.height = 1
-
-  for (let i = 0; i < data.length / 4; i++) {
-    const [r, g, b, a] = data.slice(i, i + 4)
-
-    ctx.fillStyle = `rgba(${r}, ${g}, ${b}, 1)`
-    ctx.fillRect(i, 0, 1, 1)
-  }
 
   {
     const texture = gl.createTexture()
@@ -120,11 +106,8 @@ if (program) {
     // Until then put a single pixel in the texture so we can
     // use it immediately. When the image has finished downloading
     // we'll update the texture with the contents of the image.
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE,
-      new Uint8Array([0, 0, 255, 255]))
-
-    gl.bindTexture(gl.TEXTURE_2D, texture)
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA,gl.UNSIGNED_BYTE, image)
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, canvas.width, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE,
+      new Uint8Array(data))
 
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
