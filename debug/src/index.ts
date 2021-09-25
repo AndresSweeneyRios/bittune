@@ -7,54 +7,48 @@ import {
   saw,
   pulse,
   triangle,
-  effects
+  effects,
+  Note,
+  Track,
+  Audio,
+  square,
+  WebPlayer,
 } from "../../src"
 
-const player = new Player()
+import {
+  reverb, stretch, crush,
+} from "../../src/effects"
 
-const wave = sine("A#4", 1 / 32, {
-  release: 0,
-  attack: 0
-})(player)
+import {
+  pi,
+} from "./compositions/pi"
 
-player.play(wave)
+import {
+  arp,
+} from "./compositions/arp"
 
-console.log(wave)
+import {
+  generateWave,
+} from '../../src/utils'
 
-const toFloat32 = (value: number) => {
-  var bytes = 0;
-  switch (value) {
-    case Number.POSITIVE_INFINITY: bytes = 0x7F800000; break;
-    case Number.NEGATIVE_INFINITY: bytes = 0xFF800000; break;
-    case +0.0: bytes = 0x40000000; break;
-    case -0.0: bytes = 0xC0000000; break;
-    default:
-      if (Number.isNaN(value)) { bytes = 0x7FC00000; break; }
+const player = new WebPlayer({
+  sampleRate: 8000,
+})
 
-      if (value <= -0.0) {
-        bytes = 0x80000000;
-        value = -value;
-      }
+const P2 = Math.PI * 2
 
-      var exponent = Math.floor(Math.log(value) / Math.log(2));
-      var significand = ((value / Math.pow(2, exponent)) * 0x00800000) | 0;
 
-      exponent += 127;
-      if (exponent >= 0xFF) {
-        exponent = 0xFF;
-        significand = 0;
-      } else if (exponent < 0) exponent = 0;
+window.addEventListener('mousedown', () => {
+  player.play(reverb(sine("A#4", 1/4)(player), player.sampleRate))
+})
 
-      bytes = bytes | (exponent << 23);
-      bytes = bytes | (significand & ~(-1 << 23));
-      break;
-  }
-  return bytes;
-};
+const wave = sine("A4", 1/8)(player)
 
 const canvas = document.createElement('canvas')
 document.body.appendChild(canvas)
 const gl = canvas.getContext('webgl')!
+
+canvas.width = window.innerWidth
 
 const createShader = (gl: WebGLRenderingContext, type: number, source: string) => {
   const shader = gl.createShader(type)!

@@ -59,15 +59,17 @@ export const generateWave = (
     for (let x = 0; x < config.sampleRate * seconds; x++) {
       hooks.pre?.(x, config, config.sample[x])
 
-      config.sample[x] = callback(x, config.sampleRate / config.frequency, config, 0)
+      const sampleFrequency = config.sampleRate / config.frequency
+
+      config.sample[x] = callback(x, sampleFrequency, config, 0)
       
       if (hooks.post) {
-        const nx = hooks.post(x, config.sampleRate / config.frequency, config, config.sample[x])
+        const nx = hooks.post(x, sampleFrequency, config, config.sample[x])
 
         if (nx !== undefined) config.sample[x] = nx
       }
 
-      config.sample[x] = config.sample[x] * envelope.volume * player.volume
+      config.sample[x] = config.sample[x] * envelope.volume * player.volume * player.bitDepth
     }
 
     return fade(config.sample, player.sampleRate, envelope.attack, envelope.release)

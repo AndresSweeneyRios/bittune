@@ -6,6 +6,7 @@
   "scripts": {
     "watch": "tsc -w",
     "dev": "cd debug && webpack serve",
+    "dev:cli": "ts-node-dev --project ./tsconfig.json ./cli/index.ts ",
     "lint": "eslint --fix --ext .js,.vue,.ts ./"
   },
   "repository": {
@@ -28,9 +29,13 @@
     "raw-loader": "^4.0.2",
     "source-map-support": "^0.5.19",
     "ts-loader": "^9.1.1",
+    "ts-node-dev": "^1.1.8",
     "typescript": "^4.1.2",
     "webpack": "^5.36.2",
     "webpack-cli": "^4.6.0",
     "webpack-dev-server": "^3.11.2"
+  },
+  "dependencies": {
+    "speaker": "^0.5.3"
   }
 }
